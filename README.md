@@ -1,4 +1,4 @@
-# How-does-an-OS-work
+# Operating_Systems
 S16OS is a bare bones Operating System simulation that is created in C.
 See how I used this to create my own programming language: [Potato Programming language](https://github.com/Auroxsus/Potato_Programming_Language).
 
