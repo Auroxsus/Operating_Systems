@@ -1,6 +1,6 @@
 # Operating_Systems
 S16OS is a bare bones Operating System simulation that is created in C.
-See how I used this to create my own programming language: [Potato Programming language](https://github.com/Auroxsus/Potato_Programming_Language).
+See how I used this to understand and create my own programming language: [Potato Programming language](https://github.com/Auroxsus/Potato_Programming_Language).
 
 > "Although each machine has a different assembly language, the assembly process is sufficiently similar on different machines that it
 is possible to describe it in general.[^1].
@@ -25,30 +25,30 @@ We are going to practice Operating System concepts with the following:
 * `[filename].listing` : identifies source line(s) containing syntax errors found in `[filenmae].s16`
 
 How to Use:
-1. Download all files {`S16.c`, `S16Assebler.c`, `Computer.h`, `Computer.c`, `LabelTable.c`, `LabelTable.h`, `Random.c`, `Random.h`, `S16.config`, `SVCDefinitions.txt`.} into a single folder
+1. Download all files {`S16.c`, `S16Assebler.c`, `Computer.h`, `Computer.c`, `LabelTable.h`, `LabelTable.c`,  `Random.h`, `Random.c`, `S16.config`, `SVCDefinitions.txt`.} into a single folder
 2. Build the Modules for `S16Assembler.c` and for `S16.c` to create `S16Assembler.exe` and `S16.exe`
-> [!NOTE]
-> You must build `S16Assembler.exe` and `S16.exe` using a C programming language project, not a C++ project!
-4. Download `Sample1.job` and the `Sample.s16` and place them in your folder.
+> [!TIP]
+> You must build `S16Assembler.exe` and `S16.exe` using a _C programming language_ project, not a _C++_ project!
+> * For S16Assembler Project, it __must__ contain the following source files: `S16Assebler.c`, `Computer.h`, `LabelTable.h`, `LabelTable.c`
+> * For S16 Project, it __must__ contain the following source files: `S16.c`, `Computer.h`, `Computer.c`, `LabelTable.h`, `LabelTable.c`,  `Random.h`, `Random.c`
+3. Download `Sample1.job` and the `Sample.s16` and place them in your folder.
+> [!IMPORTANT]
+> Ensure that your S16 content folder has a copy of the configuartion file `S16.config`
 
-> [!WARNING]
+> [!NOTE]
 > Assuming that the S16 assembly language source file `Sample1.s16` is stored in the same folder as the S16Assembler load module
 `S16Assembler.exe`, S16Assembler can be run without a command line argument (which causes S16Assembler to prompt for the source file
 name)
 > ```
-> C:\CS3350\S16>S16Assembler
+> C:Operating_Systems\S16Simulation\Code\S16>S16Assembler
 > S16 source filename [.s16]? Sample1
 > ```
 > or with the source file name provided as the only command line argument
 >
 >```
->C:\CS3350\S16>S16Assembler Sample1
+>C:C:Operating_Systems\S16Simulation\Code\S16>S16Assembler Sample1
 >```
-5. Run `S16Assembler.exe` to assemble `Sample1.s16`. This creates a `Sample1.object` and `Sample1.listing`
-> [!NOTE]
+4. Run `S16Assembler.exe` to assemble `Sample1.s16`. This creates a `Sample1.object` and `Sample1.listing`
+> [!IMPORTANT]
 > When executed to translate an open-able `.s16` source file, the S16 assembler always produces a `.listing` file, but will produce an `.object` file *only* when the assembly process ends without finding syntax
-7. Run `S16.exe` to run the jobstream `Sample1.job`. This creates a `Sample1.trace`
-
-S16Assembler is a two-pass translator that builds a listing file and an object file during pass two. You should study S16Assembler.c,
-Computer.h, LabelTable.c, and LabelTable.h to develop a sense about how a language translator “works”. Notice that pass one is implemented
-by the function DoPass1() and pass two is implemented by the function DoPass2()
+5. Run `S16.exe` to run the jobstream `Sample1.job`. This creates a `Sample1.trace`
