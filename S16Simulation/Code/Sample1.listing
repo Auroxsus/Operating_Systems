@@ -1,0 +1,46 @@
+Page   1, Full source file name "Sample1.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;----------------------------------------------------------
+                       2 ; Demonstrate use of S16OS system service requests for terminal IO
+                       3 ; Sample1.s16
+                       4 ;----------------------------------------------------------
+                       5    CODESEGMENT
+                       6 ;----------------------------------------------------------
+                       7 ; PROGRAM main()
+                       8 ;    *Note* main() does not have an activation record because *ALL*
+                       9 ;       main() local data is stored as static data
+                      10 ;----------------------------------------------------------
+0X0000                11 main               EQU       *
+                      12 
+                      13 ; INPUT "x? " x
+0X0000 41010F0202     14                    LDAR      R15,format1
+0X0005 0A012C         15                    SVC       #SVC_READ_FROM_TERMINAL
+0X0008 4201010200     16                    STR       R1,x
+                      17 ; PRINT x,ENDL
+0X000D 40100F0210     18                    LDR       R15,#format2
+0X0012 4001010200     19                    LDR       R1,x
+0X0017 0A012D         20                    SVC       #SVC_WRITE_TO_TERMINAL
+                      21 
+                      22 ; STOP
+0X001A 0A0064         23                    SVC       #SVC_TERMINATE_PROCESS
+                      24 
+                      25 ;----------------------------------------------------------
+                      26    DATASEGMENT
+                      27 ;----------------------------------------------------------
+                      28 ; ***Service request number definitions
+0X0200                29 SVC_TERMINATE_PROCESS                  EQU       100
+0X0200                30 SVC_READ_FROM_TERMINAL                 EQU       300
+0X0200                31 SVC_WRITE_TO_TERMINAL                  EQU       301
+                      32 
+                      33 ; ***Static data
+0X0200                34 x                  RW
+0X0202 0078003F0020   35 format1            DS        "x? %1i"
+0X0208 002500310069
+0X020E 0000        
+0X0210 00780020003D   36 format2            DS        "x = %1i%n"
+0X0216 002000250031
+0X021C 00690025006E
+0X0222 0000        
+                      37 
+                      38    END
