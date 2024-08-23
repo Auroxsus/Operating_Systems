@@ -1,0 +1,38 @@
+;----------------------------------------------------------
+; Demonstrate use of S16OS system service requests for terminal IO
+; Sample1.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() does not have an activation record because *ALL*
+;       main() local data is stored as static data
+;----------------------------------------------------------
+main               EQU       *
+
+; INPUT "x? " x
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,x
+; PRINT x,ENDL
+                   LDR       R15,#format2
+                   LDR       R1,x
+                   SVC       #SVC_WRITE_TO_TERMINAL
+
+; STOP
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100
+SVC_READ_FROM_TERMINAL                 EQU       300
+SVC_WRITE_TO_TERMINAL                  EQU       301
+
+; ***Static data
+x                  RW
+format1            DS        "x? %1i"
+format2            DS        "x = %1i%n"
+
+   END
