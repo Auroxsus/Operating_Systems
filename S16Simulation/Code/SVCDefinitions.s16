@@ -1,0 +1,128 @@
+;----------------------------------------------------------
+; Service request number definitions
+;----------------------------------------------------------
+; * miscellaneous
+SVC_DO_NOTHING                         EQU      0
+SVC_GET_CURRENT_TIME                   EQU      1
+SVC_GET_RANDOM_INTEGER                 EQU      2
+
+; * process management
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_ABORT_PROCESS                      EQU    101
+SVC_SLEEP_PROCESS                      EQU    102
+SVC_DUMP_PROCESS_DATA                  EQU    103
+SVC_GET_PROCESS_HANDLE                 EQU    104
+SVC_GET_PROCESS_NAME                   EQU    105
+SVC_GET_PROCESS_PRIORITY               EQU    106
+SVC_SET_PROCESS_PRIORITY               EQU    107
+SVC_SET_PROCESS_SVCERROR_HANDLER       EQU    108
+SVC_GET_DATA_SEGMENT_UB_PAGE           EQU    109
+SVC_GET_STACK_SEGMENT_SIZE_IN_PAGES    EQU    110
+SVC_SET_STACK_SEGMENT_SIZE_IN_PAGES    EQU    111
+
+SVC_SET_PROCESS_SIGNAL_HANDLER         EQU    112
+SVC_SEND_SIGNAL_TO_PROCESS             EQU    113
+
+SVC_CREATE_CHILD_PROCESS               EQU    150
+SVC_CREATE_CHILD_THREAD                EQU    180
+SVC_GET_ACTIVE_CHILD_THREAD_COUNT      EQU    181
+SVC_SUSPEND_CHILD_THREAD               EQU    182
+SVC_RESUME_CHILD_THREAD                EQU    183
+SVC_TERMINATE_CHILD_THREAD             EQU    184
+SVC_JOIN_CHILD_THREAD                  EQU    185
+
+; * resource management
+SVC_GET_RESOURCE_TYPE                  EQU    200
+SVC_GET_RESOURCE_HANDLE                EQU    201
+SVC_WAIT_FOR_RESOURCE_HANDLE           EQU    202
+SVC_GET_RESOURCE_NAME                  EQU    203
+
+; * terminal IO
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; * disk drive IO
+SVC_READ_DISK_SECTOR                   EQU    400
+SVC_WRITE_DISK_SECTOR                  EQU    401
+
+; * memory segments
+SVC_CREATE_MEMORY_SEGMENT              EQU    500
+SVC_DESTROY_MEMORY_SEGMENT             EQU    501
+SVC_SHARE_MEMORY_SEGMENT               EQU    502
+SVC_UNSHARE_MEMORY_SEGMENT             EQU    503
+SVC_GET_MEMORY_SEGMENT_LB_PAGE         EQU    504
+SVC_GET_MEMORY_SEGMENT_SIZE_IN_PAGES   EQU    505
+
+; * message boxes
+SVC_CREATE_MESSAGEBOX                  EQU    600
+SVC_DESTROY_MESSAGEBOX                 EQU    601
+SVC_SEND_MESSAGE                       EQU    602
+SVC_REQUEST_MESSAGE                    EQU    603
+SVC_GET_MESSAGE_COUNT                  EQU    604
+
+; * semaphores
+SVC_CREATE_SEMAPHORE                   EQU    700
+SVC_DESTROY_SEMAPHORE                  EQU    701
+SVC_WAIT_SEMAPHORE                     EQU    702
+SVC_SIGNAL_SEMAPHORE                   EQU    703
+
+; * mutexes
+SVC_CREATE_MUTEX                       EQU    800
+SVC_DESTROY_MUTEX                      EQU    801
+SVC_LOCK_MUTEX                         EQU    802
+SVC_UNLOCK_MUTEX                       EQU    803
+
+; * events
+SVC_CREATE_EVENT                       EQU    900
+SVC_DESTROY_EVENT                      EQU    901
+SVC_SIGNAL_EVENT                       EQU    902
+SVC_SIGNALALL_EVENT                    EQU    903
+SVC_WAIT_EVENT                         EQU    904
+SVC_GET_EVENT_QUEUE_SIZE               EQU    905
+
+; * pipes
+SVC_CREATE_PIPE                        EQU   1000
+SVC_DESTROY_PIPE                       EQU   1001
+SVC_READ_PIPE                          EQU   1002
+SVC_WRITE_PIPE                         EQU   1003
+SVC_GET_PIPE_SIZE                      EQU   1004
+
+;----------------------------------------------------------
+; Service request return code definitions
+;----------------------------------------------------------
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+SVC_ERROR001                           EQU      1          ; Unknown service request number
+SVC_ERROR002                           EQU      2          ; Terminal IO error
+SVC_ERROR003                           EQU      3          ; Semaphore value must be >= 0
+SVC_ERROR004                           EQU      4          ; Message box queue size too large
+SVC_ERROR005                           EQU      5          ; Set priority failure, priority is out-of-range
+SVC_ERROR006                           EQU      6          ; SVC error handler address is out-of-range
+SVC_ERROR007                           EQU      7          ; Pipe capacity out-of-range
+SVC_ERROR008                           EQU      8          ; Unable to create resource
+SVC_ERROR009                           EQU      9          ; Resource does not exist
+SVC_ERROR010                           EQU     10          ; Only owner can destroy resource
+SVC_ERROR011                           EQU     11          ; Sector address is out-of-range
+SVC_ERROR012                           EQU     12          ; Invalid handle
+SVC_ERROR013                           EQU     13          ; Message box owner only allowed to send/request from box
+SVC_ERROR014                           EQU     14          ; Message box capacity must be >= 0
+SVC_ERROR015                           EQU     15          ; Random number interval upper-bound must be >= 0
+SVC_ERROR016                           EQU     16          ; Child jobstream file must contain only 1 job
+SVC_ERROR017                           EQU     17          ; Child jobstream file contains a syntax error
+SVC_ERROR018                           EQU     18          ; Set stack size failure, stack must be empty
+SVC_ERROR019                           EQU     19          ; Set stack size failure, size-in-pages is out-of-range
+SVC_ERROR020                           EQU     20          ; Set stack size failure, page-range not free
+SVC_ERROR021                           EQU     21          ; Create memory-segment failure, page-range not free
+SVC_ERROR022                           EQU     22          ; Share memory-segment failure, page-range not free
+
+;----------------------------------------------------------
+; Resource type definitions
+;----------------------------------------------------------
+NOTCREATEDS                            EQU      0
+JOBS                                   EQU      1
+MESSAGEBOXES                           EQU      2
+MEMORYSEGMENTS                         EQU      3
+SEMAPHORES                             EQU      4
+MUTEXES                                EQU      5
+EVENTS                                 EQU      6
+PIPES                                  EQU      7
