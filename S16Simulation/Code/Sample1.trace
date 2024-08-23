@@ -1,0 +1,258 @@
+  1: ;--------------------------------------------------
+  2: ; S16 "standard" config file
+  3: ; S16.config
+  4: ;--------------------------------------------------
+  5: ; TRACE-ing parameters setting must be one of { true,false }
+  6: ENABLE_TRACING = true
+  7: TRACE_INSTRUCTIONS = true
+  8: TRACE_MEMORY_ALLOCATION = true
+  9: TRACE_SJF_SCHEDULING = true
+ 10: TRACE_SCHEDULER = true
+ 11: TRACE_DISPATCHER = true
+ 12: TRACE_QUEUES = true
+ 13: TRACE_STATISTICS = true
+ 14: TRACE_HWINTERRUPTS = true
+ 15: TRACE_MISCELLANEOUS_SVC = true
+ 16: TRACE_PROCESS_MANAGEMENT = true
+ 17: TRACE_RESOURCE_MANAGEMENT = true
+ 18: TRACE_TERMINAL_IO = true
+ 19: TRACE_DISK_IO = true
+ 20: TRACE_MEMORYSEGMENTS = true
+ 21: TRACE_MESSAGEBOXES = true
+ 22: TRACE_SEMAPHORES = true
+ 23: TRACE_MUTEXES = true
+ 24: TRACE_EVENTS = true
+ 25: TRACE_PIPES = true
+ 26: ;***NEW
+ 27: TRACE_DEADLOCK_DETECTION = true
+ 28: TRACE_SIGNALS = true
+ 29: ;***ENDNEW
+ 30: 
+ 31: ; CPU short-term scheduler setting must be one of 
+ 32: ;   { FCFS_CPU_SCHEDULER,PRIORITY_CPU_SCHEDULER,SJF_CPU_SCHEDULER }
+ 33: CPU_SCHEDULER = FCFS_CPU_SCHEDULER;
+ 34: 
+ 35: ; Priority parameter settings should satisfy
+ 36: ;    ( 0 <= MAXIMUM_PRIORITY <= DEFAULT_PRIORITY <= MINIMUM_PRIORITY )
+ 37: MINIMUM_PRIORITY = 10
+ 38: DEFAULT_PRIORITY =  5
+ 39: MAXIMUM_PRIORITY =  1
+ 40: 
+ 41: ; SJF alpha parameter setting should be a fixed-point number in the range [ 0.0,1.0 ]
+ 42: alpha = 0.50
+ 43: 
+ 44: ; setting must be in { true,false }, time quantum setting should 
+ 45: ;    satisfy ( 50 <= TIME_QUANTUM )
+ 46: USE_PREEMPTIVE_CPU_SCHEDULER = false
+ 47: TIME_QUANTUM = 10000
+ 48: 
+ 49: ; message queue scheduler parameter setting must be FCFS_MQ_SCHEDULER
+ 50: MQ_SCHEDULER = FCFS_MQ_SCHEDULER
+ 51: 
+ 52: ; disk IO queue scheduler parameter setting must be FCFS_DISKIOQ_SCHEDULER
+ 53: DISKIOQ_SCHEDULER = FCFS_DISKIOQ_SCHEDULER
+ 54: 
+ 55: ; setting must be one of { true,false }, S16clock quantum should satisfy 
+ 56: ;   ( 10000 <= S16CLOCK_QUANTUM )
+ 57: USE_S16CLOCK_QUANTUM = true
+ 58: S16CLOCK_QUANTUM = 10000
+ 59: 
+ 60: ; service request wait time parameters should satisfy
+ 61: ;   ( 20 <= MINIMUM_SVCWAITTIME <= MAXIMUM_SVCWAITTIME )
+ 62: MINIMUM_SVCWAITTIME =  20
+ 63: MAXIMUM_SVCWAITTIME = 200
+ 64: 
+ 65: ;***NEW***
+ 66: ; context switch time should satisfy ( CONTEXT_SWITCH_TIME > 0 )
+ 67: CONTEXT_SWITCH_TIME = 10
+ 68: 
+ 69: ; deadlock detection algorithm should be one of 
+ 70: ;   { DEADLOCK_DETECTION_METHOD1,DEADLOCK_DETECTION_METHOD2,NO_DEADLOCK_DETECTION }
+ 71: DEADLOCK_DETECTION_ALGORITHM = DEADLOCK_DETECTION_METHOD1
+ 72: ;***ENDNEW
+ 73: 
+ 74: ; Terminal IO settings
+ 75: DEFAULT_TERMINAL_PROMPT = "? "
+ 76: TRUE_STRING  = "true"
+ 77: FALSE_STRING = "false"
+ 78: 
+ 79: ; default SSSize measured in pages should be in range [ 1,126 ]
+ 80: DEFAULT_SSSIZE_IN_PAGES = 8
+Configuration file "Sample1.config" not found
+---------------------------------------------------------
+S16/S16OS version FA2022
+
+Tracing is enabled
+   Trace instruction execution
+   Trace memory allocations
+   Trace SJF scheduler t and tau changes
+   Trace process scheduling decisions
+   Trace process dispatching decisions
+   Trace O/S queue operations
+   Trace individual process statistics and system statistics
+   Trace occurrence of hardware interrupts
+   Trace miscellaneous service requests (ones not already traced)
+   Trace process management activities
+   Trace resource management activities
+   Trace terminal IO
+   Trace disk IO
+   Trace memory-segment activities
+   Trace message box service requests
+   Trace semaphore service requests
+   Trace mutex service requests
+   Trace event service requests
+   Trace pipe service requests
+   Trace deadlock detection
+   Trace signals
+
+Maximum number of resources is  512
+
+Using First Come/First Serve (FCFS) short-term CPU scheduler
+
+Using non-preemptive short-term CPU scheduler
+
+Using FCFS message queue scheduler
+
+Using FCFS disk IO queue scheduler
+
+Guarding against run-away execution
+   S16clock quantum is 10000
+
+Minimum SVC wait time is    20
+Maximum SVC wait time is   200
+
+Context switch time is    10
+
+Using single-instance resource deadlock detection algorithm (method #1)
+
+Default terminal prompt is "? "
+TRUE string is "true"
+FALSE string is "false"
+
+Default SSSize in pages is 8
+---------------------------------------------------------
+
+@         0      construct empty queue "readyQ"
+@         0      construct empty queue "jobQ"
+@         0      construct empty queue "waitQ"
+@         0      construct empty queue "joinQ"
+@         0      construct empty queue "signalsQ"
+@         0      construct empty queue "suspendedQ"
+@         0      construct empty queue "sleepQ"
+@         0      construct empty queue "resourcesWaitQ"
+@         0      construct empty queue "diskIOQ"
+  1: ;----------------------------------------------------------
+  2: ; Demonstrate use of S16OS system service requests for terminal IO
+  3: ; Sample1.job
+  4: ;----------------------------------------------------------
+  5: $JOB NAME="Sample1" FILE = "Sample1" PRIORITY = 4 ARRIVAL = 300
+@         0      allocate JOBS resource "Sample1" (handle 1)
+  6: $END
+@         0(  1) added to "jobQ" = { 1(300) }
+@       300(  1) removed from "jobQ" = { empty }
+@       300      construct empty queue "Sample1 (childThreadQ)"
+@       300(  1) allocated physical page 0 (code-segment for new job)
+@       300(  1) allocated physical page 1 (data-segment for new job)
+@       300(  1) allocated physical page 2 (stack-segment for new job)
+@       300(  1) allocated physical page 3 (stack-segment for new job)
+@       300(  1) allocated physical page 4 (stack-segment for new job)
+@       300(  1) allocated physical page 5 (stack-segment for new job)
+@       300(  1) allocated physical page 6 (stack-segment for new job)
+@       300(  1) allocated physical page 7 (stack-segment for new job)
+@       300(  1) allocated physical page 8 (stack-segment for new job)
+@       300(  1) allocated physical page 9 (stack-segment for new job)
+@       300(  1) create heavyweight process "Sample1"
+@       300(  1) added to "readyQ" = { 1(300,4,10000) }
+@       300(  1) removed from "readyQ" = { empty }
+@       305(  1) scheduled "readyQ" = { empty }
+@       305(  1) dispatched
+                 main:
+@       306(  1) 0000: LDAR    R15,0202           R15 = 0202                  format1                                   
+@       307(  1) t =     2, tau =  5001
+(  1)< x? 23
+@       312(  1) added to "waitQ" = { 1(495) }
+@       307(  1) 0005: SVC     #012C              R0 = 0000 R15(0202)         SVC_READ_FROM_TERMINAL                    
+@       495(  1) removed from "waitQ" = { empty }
+@       495(  1) added to "readyQ" = { 1(495,4,5001) }
+@       495(  1) removed from "readyQ" = { empty }
+@       500(  1) scheduled "readyQ" = { empty }
+@       500(  1) dispatched
+@       501(  1) 0008: STR     R1,0200            R1(0017 @0200)              x                                         
+@       502(  1) 000D: LDR     R15,#0210          R15 = 0210 @0010            format2                                   
+@       503(  1) 0012: LDR     R1,0200            R1 = 0017 @0200             x                                         
+@       504(  1) t =     4, tau =  2502
+(  1)> x = 23
+@       509(  1) added to "waitQ" = { 1(643) }
+@       504(  1) 0017: SVC     #012D              R0 = 0000 R15(0210)         SVC_WRITE_TO_TERMINAL                     
+@       643(  1) removed from "waitQ" = { empty }
+@       643(  1) added to "readyQ" = { 1(643,4,2502) }
+@       643(  1) removed from "readyQ" = { empty }
+@       648(  1) scheduled "readyQ" = { empty }
+@       648(  1) dispatched
+@       649(  1) t =     1, tau =  1251
+@       654(  1) terminated
+Turn Around Time             354 ticks
+Run   State Time               7 ticks         3 count
+Ready State Time               0 ticks         3 count
+Wait  State Time             317 ticks         2 count
+Join  State Time               0 ticks         0 count
+Suspended State Time           0 ticks         0 count
+Sleep State Time               0 ticks         0 count
+Semaphore Wait Time            0 ticks         0 count
+Mutex     Wait Time            0 ticks         0 count
+Message Wait Time              0 ticks         0 count
+Event Wait Time                0 ticks         0 count
+Disk IO Wait Time              0 ticks         0 count
+Resources Wait Time            0 ticks         0 count
+Context Switch Time           30 ticks         3 count
+H/W Interrupts                 0
+CPU Bursts                     3
+Tau                         1251 ticks
+IO Bursts                      3
+Signals                        0 sent,         0 ignored,         0 handled
+Resources                      0 allocated,    0 deallocated
+
+@       654(  1) deallocated physical page 0 (code-segment during terminate job)
+@       654(  1) deallocated physical page 1 (data-segment during terminate job)
+@       654(  1) deallocated physical page 2 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 3 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 4 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 5 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 6 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 7 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 8 (stack-segment during terminate job)
+@       654(  1) deallocated physical page 9 (stack-segment during terminate job)
+@       654      destruct empty queue "Sample1 (childThreadQ)"
+@       654      deallocate JOBS resource "Sample1" (handle 1)
+Jobs still alive               0
+
+Number of jobs           1
+Throughput         0.00282 jobs/clock-tick
+CPU Utilization      1.69%
+IDLE-ing           174.86%
+Context switching    8.47%
+
+***Trace the state of system queues
+@       654   "jobQ" is empty
+@       654   "readyQ" is empty
+@       654   "waitQ" is empty
+@       654   "joinQ" is empty
+@       654   "signalsQ" is empty
+@       654   "sleepQ" is empty
+@       654   "suspendedQ" is empty
+@       654   "resourcesWaitQ" is empty
+@       654   "diskIOQ" is empty
+***End trace the state of system queues
+
+@       654      destruct empty queue "jobQ"
+@       654      destruct empty queue "readyQ"
+@       654      destruct empty queue "waitQ"
+@       654      destruct empty queue "joinQ"
+@       654      destruct empty queue "signalsQ"
+@       654      destruct empty queue "sleepQ"
+@       654      destruct empty queue "suspendedQ"
+@       654      destruct empty queue "resourcesWaitQ"
+@       654      destruct empty queue "diskIOQ"
+@       649(  1) 001A: SVC     #0064              R0 = 0000 R15(0210)         SVC_TERMINATE_PROCESS                     
+
+CPU halted
