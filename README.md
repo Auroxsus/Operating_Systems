@@ -52,3 +52,10 @@ name)
 > [!IMPORTANT]
 > When executed to translate an open-able `.s16` source file, the S16 assembler always produces a `.listing` file, but will produce an `.object` file *only* when the assembly process ends without finding syntax
 5. Run `S16.exe` to run the jobstream `Sample1.job`. This creates a `Sample1.trace`
+
+> [!CAUTION]
+> When the input file is stored in a folder different from the folder that contains the _S16_ load module, the input file path must also be specified. For example,
+> ```
+> ".\JobStreams\Sample1"
+> ```
+> The path `".\JobStreams\"` becomes the `WORKINGDIRECTORY` which is then automatically prefixed to the input file name `.config` file passed to the`CREATE_CHILD_PROCESS` system service request.
