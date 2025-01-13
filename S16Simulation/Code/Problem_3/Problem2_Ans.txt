@@ -1,0 +1,28 @@
+
+ 1. It's a holder for an integer value from Register 1 (R1)
+
+ 2. CMPR Rn compareSigned Rn2 ex. i (R1) ?? n (R2) 
+    ?? is defined as <, -, or >
+    this assigns Rn  -1, 0, 1 respectively
+    JMPP Rn > 0 ex. JMPP R1, endFOR
+    JMPP looks to see if i (R1) holds the value 1
+    if it does, jump to endFOR
+
+ 3. FALSE
+ 
+ 4. immediate addressing mode
+ 
+ 5. R1
+
+ 6. TRUE
+
+ 7. JMPN R0, endWHILE
+    R0 represents the EOF and IF the input from the terminal
+    in the previous line SVC #SVC_READ_FROM_TERMINAL is the EOF
+    it will jump to the endWHILE label
+
+ 8. R1
+
+ 9. D: [0,25]
+
+10. JMP is used to prevent executing the ELSE clause

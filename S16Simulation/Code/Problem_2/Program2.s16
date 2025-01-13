@@ -1,0 +1,60 @@
+;----------------------------------------------------------
+; Problem2.s16
+; French Fry Productions
+;----------------------------------------------------------
+   CODESEGMENT
+main               EQU       *
+
+; using R15 for outputs
+
+;----------------------------------------------------------
+; time := current time
+;----------------------------------------------------------
+                   SVC       #SVC_GET_CURRENT_TIME
+                   STR       R1, x         ; Store time
+;----------------------------------------------------------
+; PRINT "Current time = ", time, endl
+;----------------------------------------------------------
+                   LDR       R15, #format1  ; Print format1
+				   LDAR      R1, x          ; Print time
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; time := current time
+;----------------------------------------------------------
+                   SVC       #SVC_GET_CURRENT_TIME
+                   STR       R1, x         ; Store time
+;----------------------------------------------------------
+; PRINT "Current time = ", time, endl
+;----------------------------------------------------------
+                   LDR       R15, #format1  ; Print format1
+				   LDAR      R1, x          ; Print time
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; time := current time
+;----------------------------------------------------------
+                   SVC       #SVC_GET_CURRENT_TIME
+                   STR       R1, x         ; Store time
+;----------------------------------------------------------
+; PRINT "Current time = ", time, endl
+;----------------------------------------------------------
+                   LDR       R15, #format1  ; Print format1
+				   LDAR      R1, x          ; Print time
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; STOP
+;----------------------------------------------------------
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100  ; Terminating the process
+SVC_WRITE_TO_TERMINAL                  EQU       301  ; Writing output to the terminal
+SVC_GET_CURRENT_TIME				   EQU		 1    ; Getting the current time
+
+; ***Static data
+x                  RW
+format1            DS        "Current time = %1i%n"]
+
+   END

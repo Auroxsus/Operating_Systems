@@ -1,0 +1,77 @@
+;----------------------------------------------------------
+; Problem4.s16
+; French Fry Productions
+;----------------------------------------------------------
+   CODESEGMENT
+main               EQU       *
+;----------------------------------------------------------
+; count := 0
+;----------------------------------------------------------
+                   LDR       R3, #0         ; Initialize count (R3) = 0
+;----------------------------------------------------------
+; sum := 0
+;----------------------------------------------------------
+                   LDR       R4, #0         ; Initialize sum (R4) = 0
+;----------------------------------------------------------
+; WHILE (INPUT "x? " x does not return EOF )
+;----------------------------------------------------------
+
+WHILE1             EQU       *                          ; Loop start
+
+				  ;----------------------------------------------------------
+				  ; INPUT "x? " x
+				  ;----------------------------------------------------------
+                   LDR       R15, #format1           ; Print "x? " prompt
+                   SVC       #SVC_READ_FROM_TERMINAL ; Read input from terminal
+				   JMPN      R0, endWHILE1           ; if R0 is not -1 it wont jump EOF  
+				   
+				  ;----------------------------------------------------------
+				  ;    count := count + 1
+				  ;----------------------------------------------------------
+				   INCR    	 R3				; count = count + 1
+				  
+				  ;----------------------------------------------------------
+				  ;    sum := sum + x
+				  ;----------------------------------------------------------
+				   ADDR      R4, R2         ; sum (R4) = sum (R4) + x (R2)
+
+                   JMP       WHILE1         ; Repeat
+;----------------------------------------------------------
+; END loop
+;----------------------------------------------------------
+endWHILE1          EQU      *               ; Loop end
+
+;----------------------------------------------------------
+; PRINT "count = ", count, ENDL
+;----------------------------------------------------------
+                   LDR       R15, #format2   ; Print format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; PRINT " sum = ", sum, ENDL
+;----------------------------------------------------------
+                   LDR       R15, #format3   ; Print format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+				   
+;----------------------------------------------------------
+; STOP
+;----------------------------------------------------------
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100  ; Terminating the process
+SVC_READ_FROM_TERMINAL                 EQU       300  ; Reading input from the terminal
+SVC_WRITE_TO_TERMINAL                  EQU       301  ; Writing output to the terminal
+; ***Service request return code definitions
+SVC_EOF                                EQU       -1   ; Terminal input EOF
+; ***Static data
+count              RW
+sum                RW
+x                  RW
+format1            DS       "x? %2i"
+format2            DS       "count =  %3i%n"
+format3            DS       "  sum = %4i%n"
+
+   END

@@ -1,0 +1,69 @@
+;----------------------------------------------------------
+; Problem1.s16
+; French Fry Productions
+;----------------------------------------------------------
+   CODESEGMENT                            ; Program logic
+main               EQU       *
+
+; using R15 for outputs
+; using R2 for inputs
+
+;----------------------------------------------------------
+; INPUT "line? " x
+;----------------------------------------------------------
+                   LDR       R15, #format1 ; Print format1
+				   LDAR      R2, x         ; Input line
+				   SVC       #SVC_READ_FROM_TERMINAL
+;----------------------------------------------------------
+; INPUT "n? " n
+;----------------------------------------------------------
+                   LDR       R15, #format2  ; Print format2
+				   SVC       #SVC_READ_FROM_TERMINAL ; input should happen before
+				   STR       R7, n          ; Store n
+;----------------------------------------------------------
+; FOR i := n to 1 by -1
+;----------------------------------------------------------
+                   LDR      R3, n          ; Initialize i (R3) = n
+                   LDR      R4, #1         ; R4 is n ;lb
+
+FOR1               EQU      *              ; Loop start
+
+                   ; Condition check
+                   COPYR    R5, R3         ; Copy current i (R3) to R5 for comparison
+                   CMPR     R5, R4         ; Compare i (R5) with 1 (R4)
+                   JMPN     R5, endFOR1    ; Jump to end if R5 < 1 or R5 holds value 1
+
+                   ; Print x, ENDL
+                   LDR      R15, #format3  ; Print format3
+                   LDAR     R2, x          ; Print line
+                   SVC      #SVC_WRITE_TO_TERMINAL
+                   
+                   DECR     R3             ; i = i - 1
+                   JMP      FOR1           ; Repeat
+
+;----------------------------------------------------------
+; End loop
+;----------------------------------------------------------
+endFOR1            EQU      *              ; Loop end
+
+;----------------------------------------------------------
+; STOP
+;----------------------------------------------------------
+                   SVC      #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100  ; Terminating the process
+SVC_READ_FROM_TERMINAL                 EQU       300  ; Reading input from the terminal
+SVC_WRITE_TO_TERMINAL                  EQU       301  ; Writing output to the terminal
+
+; ***Static data
+x                  RW       80           ; Reserve 80 characters for x
+n                  RW
+format1            DS       "line? %2s" ; indirect
+format2            DS       "n? %7i"    ; direct
+format3            DS       "%2s%n"      ; %n newline
+
+   END

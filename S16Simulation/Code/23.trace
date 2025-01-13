@@ -1,0 +1,68 @@
+Configuration file ".\S16.config" not found
+Configuration file "23.config" not found
+---------------------------------------------------------
+S16/S16OS version FA2022
+
+Tracing is enabled
+   Trace instruction execution
+   Trace memory allocations
+   Trace SJF scheduler t and tau changes
+   Trace process scheduling decisions
+   Trace process dispatching decisions
+   Trace O/S queue operations
+   Trace individual process statistics and system statistics
+   Trace occurrence of hardware interrupts
+   Trace miscellaneous service requests (ones not already traced)
+   Trace process management activities
+   Trace resource management activities
+   Trace terminal IO
+   Trace disk IO
+   Trace memory-segment activities
+   Trace message box service requests
+   Trace semaphore service requests
+   Trace mutex service requests
+   Trace event service requests
+   Trace pipe service requests
+   Trace deadlock detection
+   Trace signals
+
+Maximum number of resources is  512
+
+Using First Come/First Serve (FCFS) short-term CPU scheduler
+
+Using non-preemptive short-term CPU scheduler
+
+Using FCFS message queue scheduler
+
+Using FCFS disk IO queue scheduler
+
+Guarding against run-away execution
+   S16clock quantum is 10000
+
+Minimum SVC wait time is    20
+Maximum SVC wait time is   200
+
+Context switch time is    10
+
+Using several-instance resource deadlock detection algorithm (method #2)
+
+Default terminal prompt is "? "
+TRUE string is "true"
+FALSE string is "false"
+
+Default SSSize in pages is 8
+---------------------------------------------------------
+
+@         0      construct empty queue "readyQ"
+@         0      construct empty queue "jobQ"
+@         0      construct empty queue "waitQ"
+@         0      construct empty queue "joinQ"
+@         0      construct empty queue "signalsQ"
+@         0      construct empty queue "suspendedQ"
+@         0      construct empty queue "sleepQ"
+@         0      construct empty queue "resourcesWaitQ"
+@         0      construct empty queue "diskIOQ"
+@         0      allocate JOBS resource "23" (handle 1)
+*************************************
+@         0      S16OS error: Error opening object file "23.object", S16 aborted
+*************************************

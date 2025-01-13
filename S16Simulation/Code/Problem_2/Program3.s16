@@ -1,0 +1,83 @@
+;----------------------------------------------------------
+; Problem3.s16
+; French Fry Productions
+;----------------------------------------------------------
+   CODESEGMENT
+main               EQU       *
+;----------------------------------------------------------
+; INPUT "x? " x
+;----------------------------------------------------------
+                   LDR       R15, #format1           ; Print "x? " prompt
+                   SVC       #SVC_READ_FROM_TERMINAL ; Read input from terminal
+                   STR       R2, x                   ; Store the input in 'x'
+;----------------------------------------------------------
+; INPUT "y? " y
+;----------------------------------------------------------
+                   LDR       R15, #format2           ; Print "y? " prompt
+                   SVC       #SVC_READ_FROM_TERMINAL ; Read input from terminal
+                   STR       R3, y                   ; Store the input in 'y'
+
+;----------------------------------------------------------
+; PRINT "(x+y) = ", x + y
+;----------------------------------------------------------
+                   ADDR      R4, R3                  ; R4 = x + y
+                   LDR       R15, #format3           ; Load format3 "(x+y) = "
+                   SVC       #SVC_WRITE_TO_TERMINAL
+				   
+                   LDR       R4, x                   ; Initialize (R4) as x to be Result
+;----------------------------------------------------------
+; PRINT "(x-y) = ", x - y
+;----------------------------------------------------------
+                   SUBR      R4, R3                  ; R4 = x - y
+                   LDR       R15, #format4           ; Load format4 ", (x-y) = ", ENDL
+                   SVC       #SVC_WRITE_TO_TERMINAL
+
+                   LDR       R4, x                   ; Initialize (R4) as x to be Result
+;----------------------------------------------------------
+; PRINT "(x*y) = ", x * y
+;----------------------------------------------------------
+                   MULR      R4, R3                  ; R4 = x * y
+                   LDR       R15, #format5           ; Load format5 "(x*y) = "
+                   SVC       #SVC_WRITE_TO_TERMINAL
+
+                   LDR       R4, x                   ; Initialize (R4) as x to be Result
+;----------------------------------------------------------
+; PRINT "(x/y) = ", x / y
+;----------------------------------------------------------
+                   DIVR      R4, R3                  ; R4 = x / y
+                   LDR       R15, #format6           ; Load format6 ", (x/y) = "
+                   SVC       #SVC_WRITE_TO_TERMINAL
+
+                   LDR       R4, x                   ; Initialize (R4) as x to be Result
+;----------------------------------------------------------
+; PRINT "(x%y) = ", x % y
+;----------------------------------------------------------
+                   MODR      R4, R3                  ; R4 = x % y
+                   LDR       R15, #format7           ; Load format7 ", (x%y) = ", ENDL
+                   SVC       #SVC_WRITE_TO_TERMINAL
+				   
+;----------------------------------------------------------
+; STOP
+;----------------------------------------------------------
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100  ; Terminating the process
+SVC_READ_FROM_TERMINAL                 EQU       300  ; Reading input from the terminal
+SVC_WRITE_TO_TERMINAL                  EQU       301  ; Writing output to the terminal
+
+; ***Static data
+x                  RW
+y                  RW
+format1            DS        "x? %2i"
+format2            DS        "y? %3i"
+format3            DS        "(x+y) = %4i"
+format4            DS        ", (x-y) = %4i%n"
+format5            DS        "(x*y) = %4i"
+format6            DS        ", (x/y) = %4i"
+format7            DS        ", (x MOD y) = %4i%n"
+
+   END

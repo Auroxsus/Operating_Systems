@@ -1,0 +1,168 @@
+Page   1, Full source file name "Problem2.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;----------------------------------------------------------
+                       2 ; Dr. Art Hanna
+                       3 ; Final Exam, Problem #2
+                       4 ; Problem2.s16
+                       5 ;----------------------------------------------------------
+                       6    CODESEGMENT
+                       7 ;----------------------------------------------------------
+                       8 ; PROGRAM main()
+                       9 ;    *Note* main() uses an activation record to store *ALL*
+                      10 ;       variable local data. Constants are stored in the
+                      11 ;       data-segment as static data.
+                      12 ;----------------------------------------------------------
+                      13 ; activation record on run-time stack
+                      14 ;    0: n
+                      15 ;    1: i
+                      16 ;----------------------------------------------------------
+0X0000                17 main               EQU       *
+                      18 
+                      19 ; build activation record on run-time stack
+0X0000 530004         20                    ADJSP     #+4                           ; allocate local variables
+0X0003 52FFFC         21                    SETFB     #-4
+                      22 
+                      23 ; INPUT "n [0,24]? " n
+0X0006 41010F0200     24                    LDAR      R15,format1
+0X000B 0A012C         25                    SVC       #SVC_READ_FROM_TERMINAL
+0X000E 4221010000     26                    STR       R1,FB:0                      ; n
+                      27 ; FOR i := 0 TO n BY 1
+0X0013 2401           28                    ZEROR R1
+0X0015 4221010001     29                    STR R1,FB:1 ; i
+0X001A                30 FOR                EQU       *
+0X001A 4021010001     31                    LDR R1, FB:1   ;i
+0X001F 4021020000     32                    LDR R2, FB:0     ; n
+0X0024 280102         33                    CMPR R1, R2
+0X0027 06010050       34                    JMPP R1, endFOR ;JMPN R1, endFOR
+                      35                    
+0X002B 4401           36                    PUSHR      R1  ; i
+0X002D 50             37                    PUSHFB
+0X002E 080056         38                    CALL      F      
+0X0031 51             39                    POPFB
+0X0032 4501           40                    POPR       R1
+                      41                    
+                      42 ;    PRINT "F(",i,") = ",F(i),ENDL
+0X0034 4021030001     43                    LDR      R3, FB:1
+0X0039 41010F021C     44                    LDAR     R15,format2
+0X003E 0A012D         45                    SVC      #SVC_WRITE_TO_TERMINAL
+                      46                    
+0X0041 4021010001     47                    LDR R1, FB:1   
+0X0046 2201           48                    INCR R1       
+0X0048 4221010001     49                    STR R1, FB:1   ;i = i +1
+0X004D 01001A         50                    JMP      FOR
+                      51 ; END
+0X0050                52 endFOR             EQU       *
+                      53 ; STOP
+0X0050 53FFFC         54                    ADJSP     #-4                           ; deallocate local variables
+0X0053 0A0064         55                    SVC       #SVC_TERMINATE_PROCESS
+                      56 
+                      57 ;-----------------------------------------------------------
+                      58 ; FUNCTION F: INT(IN i: INT)
+                      59 ;-----------------------------------------------------------
+                      60 ; activation record /// FB:?
+                      61 ;    0: function return value, F(i)
+                      62 ;    1: i (pass-by-value formal parameter)
+                      63 ;    2: caller FB
+                      64 ;    3: caller return address
+                      65 ;    4: save R1
+                      66 ;    5: save R2
+                      67 ;    6: r  (local variable)
+                      68 ;    7: f2 (local variable)
+                      69 ;    8: f1 (local variable)
+                      70 ;-----------------------------------------------------------
+0X0056                71 F                  EQU       *
+0X0056 4401           72                    PUSHR     R1                            ; save registers on entry
+0X0058 4402           73                    PUSHR     R2
+                      74 ; build activation record on run-time stack
+0X005A 530006         75                    ADJSP     #6                            ; allocate local variables
+0X005D 52FFEE         76                    SETFB     #-18
+                      77 
+                      78 ; IF ( i = 0 ) THEN
+0X0060 4021010001     79                    LDR R1, FB:1     ; i
+0X0065 4010020000     80                    LDR R2, #0 
+0X006A 280102         81                    CMPR R1, R2
+0X006D 0501007E       82                    JMPNZ R1, ELSEIF 
+                      83 ;    r := 0
+Page   2, Full source file name "Problem2.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+0X0071 4010010000     84                    LDR       R1, #0     
+0X0076 4221010006     85                    STR       R1, FB:6    ; r = 0
+0X007B 0100D5         86                    JMP       ENDIF
+                      87 
+0X007E                88 ELSEIF                  EQU       *
+                      89 ; ELSEIF ( i = 1 ) THEN
+                      90 ;    r := 1
+0X007E 4021010001     91                    LDR       R1, FB:1     
+0X0083 4010020001     92                    LDR       R2, #1  
+0X0088 280102         93                    CMPR R1, R2
+0X008B 06010097       94                    JMPP R1, ELSE
+                      95                    
+0X008F 4221010006     96                    STR  R1, FB:6     ; r = 1 
+0X0094 0100D5         97                    JMP ENDIF
+                      98 ; ELSE
+0X0097                99 ELSE                  EQU       *
+                     100 ;    f2 := F(i-2)
+0X0097 4021010001    101                    LDR       R1, FB:1  ; Load i
+0X009C 2301          102                    DECR R1
+0X009E 2301          103                    DECR R1 ; i -2
+0X00A0 4401          104                    PUSHR R1
+0X00A2 50            105                    pushfb
+0X00A3 080056        106                    CALL F
+0X00A6 51            107                    popfb
+0X00A7 4502          108                    POPR R2
+0X00A9 4221020007    109                    str R2, FB:7
+                     110 
+                     111 ;    f1 := F(i-1)
+0X00AE 4021010001    112                    LDR R1, FB:1 ; i
+0X00B3 2301          113                    DECR R1 ; i -1
+0X00B5 4401          114                    PUSHR R1
+0X00B7 50            115                    pushfb
+0X00B8 080056        116                    CALL F
+0X00BB 51            117                    popfb
+0X00BC 4502          118                    POPR r2
+0X00BE 4221020008    119                    str R2, FB:8
+                     120                    
+                     121 ;     r := f2+f1
+0X00C3 4021010007    122                    LDR       R1, FB:7          
+0X00C8 4021020008    123                    LDR       R2, FB:8        
+                     124                    
+0X00CD 200102        125                    ADDR R1, R2
+0X00D0 4221010006    126                    str R1, FB:6
+                     127 
+0X00D5               128 ENDIF                  EQU       *
+                     129 ; RETURN ( r )
+0X00D5 4021010006    130                    LDR       R1,FB:6
+0X00DA 4221010000    131                    STR       R1,FB:0
+0X00DF 53FFFA        132                    ADJSP     #-6                           ; deallocate local variables
+                     133                    
+0X00E2 4502          134                    POPR      R2                            ; restore registers on exit
+0X00E4 4501          135                    POPR      R1
+0X00E6 09            136                    RET
+                     137 
+                     138 ;----------------------------------------------------------
+                     139    DATASEGMENT
+                     140 ;----------------------------------------------------------
+                     141 ; ***Service request number definitions
+0X0200               142 SVC_TERMINATE_PROCESS                  EQU    100
+0X0200               143 SVC_READ_FROM_TERMINAL                 EQU    300
+0X0200               144 SVC_WRITE_TO_TERMINAL                  EQU    301
+                     145 
+                     146 ; ***Service request return code definitions
+0X0200               147 SVC_EOF                                EQU     -1          ; Terminal input EOF
+0X0200               148 SVC_OK                                 EQU      0          ; No error occurred
+                     149 
+                     150 ; *** Static data
+0X0200 006E0020005B  151 format1            DS        "n [0,24]? %1i"
+0X0206 0030002C0032
+0X020C 0034005D003F
+0X0212 002000250031
+0X0218 00690000    
+0X021C 004600280025  152 format2            DS        "F(%3i) = %2u%n"
+0X0222 003300690029
+0X0228 0020003D0020
+0X022E 002500320075
+0X0234 0025006E0000
+                     153 
+                     154    END

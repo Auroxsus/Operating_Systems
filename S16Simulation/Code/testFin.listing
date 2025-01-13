@@ -1,0 +1,154 @@
+Page   1, Full source file name "testFin.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                       1 ;----------------------------------------------------------
+                       2 ; Dr. Art Hanna
+                       3 ; Final Exam, Problem #2
+                       4 ; Problem2.s16
+                       5 ;----------------------------------------------------------
+                       6    CODESEGMENT
+                       7 ;----------------------------------------------------------
+                       8 ; PROGRAM main()
+                       9 ;----------------------------------------------------------
+                      10 
+0X0000                11 main               EQU       *
+                      12 ; Allocate activation record for main variables
+0X0000 530004         13                    ADJSP     #4                            ; Allocate 4 words for local variables
+0X0003 52FFFC         14                    SETFB     #-4                           ; Set the Frame Base pointer
+                      15 
+                      16 ; INPUT "n [0,24]? " n
+0X0006 41010F0200     17                    LDAR      R15, format1                 ; Load the input prompt string
+0X000B 0A012C         18                    SVC       #SVC_READ_FROM_TERMINAL
+0X000E 4221010000     19                    STR       R1, FB:0                     ; Store input in n (FB:0)
+                      20 
+                      21 ; Initialize i = 0
+0X0013 2403           22                    ZEROR     R3                           ; i = 0
+0X0015 4221030001     23                    STR       R3, FB:1                     ; Store i in FB:1
+                      24 
+0X001A                25 FOR_LOOP           EQU       *                            ; Loop label
+0X001A 4021030001     26                    LDR       R3, FB:1                     ; Load i
+0X001F 4021020000     27                    LDR       R2, FB:0                     ; Load n
+0X0024 280302         28                    CMPR      R3, R2                       ; Compare i and n
+0X0027 0203005A       29                    JMPN      R3, END_FOR                      ; If i > n, exit loop
+                      30 
+                      31 ; Compute F(i)
+0X002B 4403           32                    PUSHR     R3                           ; Save i as the parameter
+0X002D 50             33                    PUSHFB
+0X002E 080060         34                    CALL      F                            ; Call F(i)
+0X0031 51             35                    POPFB
+0X0032 4501           36                    POPR      R1                           ; Retrieve F(i) in R1
+0X0034 4221010002     37                    STR       R1, FB:2                     ; Store F(i) in FB:2 (temporary)
+                      38 
+                      39 ; Print "F(i) = F(i)"
+0X0039 41010F021C     40                    LDAR      R15, format2                 ; Load the output format string
+0X003E 4021020001     41                    LDR       R2, FB:1                     ; Load i
+0X0043 4021030002     42                    LDR       R3, FB:2                     ; Load F(i)
+0X0048 0A012D         43                    SVC       #SVC_WRITE_TO_TERMINAL       ; Print result
+                      44 
+                      45 ; Increment i
+0X004B 4021030001     46                    LDR       R3, FB:1                     ; Load i
+0X0050 2203           47                    INCR      R3                           ; i = i + 1
+0X0052 4221030001     48                    STR       R3, FB:1                     ; Store i in FB:1
+0X0057 01001A         49                    JMP       FOR_LOOP                     ; Repeat loop
+                      50 
+0X005A                51 END_FOR            EQU       *                            ; End of loop
+                      52 ; Terminate program
+0X005A 53FFFC         53                    ADJSP     #-4                          ; Deallocate local variables
+0X005D 0A0064         54                    SVC       #SVC_TERMINATE_PROCESS       ; Terminate process
+                      55 
+                      56 ;----------------------------------------------------------
+                      57 ; FUNCTION F: INT(IN i: INT)
+                      58 ;----------------------------------------------------------
+                      59 
+0X0060                60 F                  EQU       *
+0X0060 4401           61                    PUSHR     R1                           ; Save R1
+0X0062 4402           62                    PUSHR     R2                           ; Save R2
+                      63 
+                      64 ; Allocate activation record for F variables
+0X0064 530006         65                    ADJSP     #6                           ; Allocate local variables
+0X0067 52FFEE         66                    SETFB     #-18                         ; Adjust Frame Base pointer
+                      67 
+                      68 ; IF (i == 0)
+0X006A 4021010001     69                    LDR       R1, FB:1                     ; Load i
+0X006F 4010020000     70                    LDR       R2, #0                       ; Load 0
+0X0074 280102         71                    CMPR      R1, R2                       ; Compare i and 0
+0X0077 05010088       72                    JMPNZ     R1, ELSE_IF                      ; If i != 0, go to ELSE_IF
+0X007B 4010020000     73                    LDR       R2, #0                       ; F(0) = 0
+0X0080 4221020006     74                    STR       R2, FB:6                     ; r = 0
+0X0085 0100EE         75                    JMP       END_IF                       ; Exit IF block
+                      76 
+                      77 ; ELSE IF (i == 1)
+0X0088                78 ELSE_IF            EQU       *
+0X0088 4021010001     79                    LDR       R1, FB:1                     ; Load i
+0X008D 4010020001     80                    LDR       R2, #1                       ; Load 1
+0X0092 280102         81                    CMPR      R1, R2                       ; Compare i and 1
+0X0095 050100A6       82                    JMPNZ     R1, ELSE                         ; If i != 1, go to ELSE
+0X0099 4010020001     83                    LDR       R2, #1                       ; F(1) = 1
+0X009E 4221020006     84                    STR       R2, FB:6                     ; r = 1
+0X00A3 0100EE         85                    JMP       END_IF                       ; Exit IF block
+                      86 
+                      87 ; ELSE
+0X00A6                88 ELSE               EQU       *
+                      89 ; Compute F(i-2)
+0X00A6 4021010001     90                    LDR       R1, FB:1                     ; Load i
+0X00AB 4010020002     91                    LDR       R2, #2                       ; Load 2
+0X00B0 210101         92                    SUBR      R1, R1, R2                   ; i - 2
+0X00B3 4401           93                    PUSHR     R1                           ; Push i-2 as parameter
+0X00B5 50             94                    PUSHFB
+0X00B6 080060         95                    CALL      F                            ; Recursive call F(i-2)
+0X00B9 51             96                    POPFB
+0X00BA 4502           97                    POPR      R2                           ; Retrieve F(i-2)
+0X00BC 4221020007     98                    STR       R2, FB:7                     ; Store F(i-2) in f2
+                      99 
+                     100 ; Compute F(i-1)
+0X00C1 4021010001    101                    LDR       R1, FB:1                     ; Load i
+0X00C6 4010020001    102                    LDR       R2, #1                       ; Load 1
+0X00CB 210101        103                    SUBR      R1, R1, R2                   ; i - 1
+0X00CE 4401          104                    PUSHR     R1                           ; Push i-1 as parameter
+0X00D0 50            105                    PUSHFB
+0X00D1 080060        106                    CALL      F                            ; Recursive call F(i-1)
+0X00D4 51            107                    POPFB
+0X00D5 4502          108                    POPR      R2                           ; Retrieve F(i-1)
+0X00D7 4221020008    109                    STR       R2, FB:8                     ; Store F(i-1) in f1
+                     110 
+                     111 ; Compute r = f2 + f1
+0X00DC 4021010007    112                    LDR       R1, FB:7                     ; Load f2
+0X00E1 4021020008    113                    LDR       R2, FB:8                     ; Load f1
+0X00E6 200101        114                    ADDR      R1, R1, R2                   ; r = f2 + f1
+0X00E9 4221010006    115                    STR       R1, FB:6                     ; Store r in FB:6
+                     116 
+0X00EE               117 END_IF             EQU       *
+Page   2, Full source file name "testFin.s16"
+    LC  Object code Line Source code
+------ ------------ ---- -------------------------------------------------------------------------------------------------
+                     118 ; Return r
+0X00EE 4021010006    119                    LDR       R1, FB:6                     ; Load r
+0X00F3 4221010000    120                    STR       R1, FB:0                     ; Store return value in FB:0
+0X00F8 53FFFA        121                    ADJSP     #-6                          ; Deallocate local variables
+0X00FB 4502          122                    POPR      R2                           ; Restore R2
+0X00FD 4501          123                    POPR      R1                           ; Restore R1
+0X00FF 09            124                    RET
+                     125 
+                     126 ;----------------------------------------------------------
+                     127 DATASEGMENT
+                     128 ;----------------------------------------------------------
+0X0200               129 SVC_TERMINATE_PROCESS EQU    100
+0X0200               130 SVC_READ_FROM_TERMINAL EQU    300
+0X0200               131 SVC_WRITE_TO_TERMINAL EQU    301
+                     132 
+0X0200               133 SVC_EOF             EQU     -1
+0X0200               134 SVC_OK              EQU      0
+                     135 
+                     136 ; Static data for format strings
+0X0200 006E0020005B  137 format1             DS       "n [0,24]? %1i"
+0X0206 0030002C0032
+0X020C 0034005D003F
+0X0212 002000250031
+0X0218 00690000    
+0X021C 004600280025  138 format2             DS       "F(%3i) = %2u%n"
+0X0222 003300690029
+0X0228 0020003D0020
+0X022E 002500320075
+0X0234 0025006E0000
+                     139 
+                     140 END

@@ -1,0 +1,140 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Final Exam, Problem #2
+; Problem2.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;----------------------------------------------------------
+
+main               EQU       *
+; Allocate activation record for main variables
+                   ADJSP     #4                            ; Allocate 4 words for local variables
+                   SETFB     #-4                           ; Set the Frame Base pointer
+
+; INPUT "n [0,24]? " n
+                   LDAR      R15, format1                 ; Load the input prompt string
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1, FB:0                     ; Store input in n (FB:0)
+
+; Initialize i = 0
+                   ZEROR     R3                           ; i = 0
+                   STR       R3, FB:1                     ; Store i in FB:1
+
+FOR_LOOP           EQU       *                            ; Loop label
+                   LDR       R3, FB:1                     ; Load i
+                   LDR       R2, FB:0                     ; Load n
+                   CMPR      R3, R2                       ; Compare i and n
+                   JMPN      R3, END_FOR                      ; If i > n, exit loop
+
+; Compute F(i)
+                   PUSHR     R3                           ; Save i as the parameter
+                   PUSHFB
+                   CALL      F                            ; Call F(i)
+                   POPFB
+                   POPR      R1                           ; Retrieve F(i) in R1
+                   STR       R1, FB:2                     ; Store F(i) in FB:2 (temporary)
+
+; Print "F(i) = F(i)"
+                   LDAR      R15, format2                 ; Load the output format string
+                   LDR       R2, FB:1                     ; Load i
+                   LDR       R3, FB:2                     ; Load F(i)
+                   SVC       #SVC_WRITE_TO_TERMINAL       ; Print result
+
+; Increment i
+                   LDR       R3, FB:1                     ; Load i
+                   INCR      R3                           ; i = i + 1
+                   STR       R3, FB:1                     ; Store i in FB:1
+                   JMP       FOR_LOOP                     ; Repeat loop
+
+END_FOR            EQU       *                            ; End of loop
+; Terminate program
+                   ADJSP     #-4                          ; Deallocate local variables
+                   SVC       #SVC_TERMINATE_PROCESS       ; Terminate process
+
+;----------------------------------------------------------
+; FUNCTION F: INT(IN i: INT)
+;----------------------------------------------------------
+
+F                  EQU       *
+                   PUSHR     R1                           ; Save R1
+                   PUSHR     R2                           ; Save R2
+
+; Allocate activation record for F variables
+                   ADJSP     #6                           ; Allocate local variables
+                   SETFB     #-18                         ; Adjust Frame Base pointer
+
+; IF (i == 0)
+                   LDR       R1, FB:1                     ; Load i
+                   LDR       R2, #0                       ; Load 0
+                   CMPR      R1, R2                       ; Compare i and 0
+                   JMPNZ     R1, ELSE_IF                      ; If i != 0, go to ELSE_IF
+                   LDR       R2, #0                       ; F(0) = 0
+                   STR       R2, FB:6                     ; r = 0
+                   JMP       END_IF                       ; Exit IF block
+
+; ELSE IF (i == 1)
+ELSE_IF            EQU       *
+                   LDR       R1, FB:1                     ; Load i
+                   LDR       R2, #1                       ; Load 1
+                   CMPR      R1, R2                       ; Compare i and 1
+                   JMPNZ     R1, ELSE                         ; If i != 1, go to ELSE
+                   LDR       R2, #1                       ; F(1) = 1
+                   STR       R2, FB:6                     ; r = 1
+                   JMP       END_IF                       ; Exit IF block
+
+; ELSE
+ELSE               EQU       *
+; Compute F(i-2)
+                   LDR       R1, FB:1                     ; Load i
+                   LDR       R2, #2                       ; Load 2
+                   SUBR      R1, R1, R2                   ; i - 2
+                   PUSHR     R1                           ; Push i-2 as parameter
+                   PUSHFB
+                   CALL      F                            ; Recursive call F(i-2)
+                   POPFB
+                   POPR      R2                           ; Retrieve F(i-2)
+                   STR       R2, FB:7                     ; Store F(i-2) in f2
+
+; Compute F(i-1)
+                   LDR       R1, FB:1                     ; Load i
+                   LDR       R2, #1                       ; Load 1
+                   SUBR      R1, R1, R2                   ; i - 1
+                   PUSHR     R1                           ; Push i-1 as parameter
+                   PUSHFB
+                   CALL      F                            ; Recursive call F(i-1)
+                   POPFB
+                   POPR      R2                           ; Retrieve F(i-1)
+                   STR       R2, FB:8                     ; Store F(i-1) in f1
+
+; Compute r = f2 + f1
+                   LDR       R1, FB:7                     ; Load f2
+                   LDR       R2, FB:8                     ; Load f1
+                   ADDR      R1, R1, R2                   ; r = f2 + f1
+                   STR       R1, FB:6                     ; Store r in FB:6
+
+END_IF             EQU       *
+; Return r
+                   LDR       R1, FB:6                     ; Load r
+                   STR       R1, FB:0                     ; Store return value in FB:0
+                   ADJSP     #-6                          ; Deallocate local variables
+                   POPR      R2                           ; Restore R2
+                   POPR      R1                           ; Restore R1
+                   RET
+
+;----------------------------------------------------------
+DATASEGMENT
+;----------------------------------------------------------
+SVC_TERMINATE_PROCESS EQU    100
+SVC_READ_FROM_TERMINAL EQU    300
+SVC_WRITE_TO_TERMINAL EQU    301
+
+SVC_EOF             EQU     -1
+SVC_OK              EQU      0
+
+; Static data for format strings
+format1             DS       "n [0,24]? %1i"
+format2             DS       "F(%3i) = %2u%n"
+
+END

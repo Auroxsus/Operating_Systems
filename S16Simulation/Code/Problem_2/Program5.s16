@@ -1,0 +1,119 @@
+;----------------------------------------------------------
+; Problem5.s16
+; French Fry Productions
+;----------------------------------------------------------
+   CODESEGMENT
+main               EQU       *
+
+;----------------------------------------------------------
+; c := RandomInt(0,25)+'A'
+;----------------------------------------------------------
+                   LDR       R10, #65        ; `A` unicode
+                   LDR       R1, #25         ; Load upper bound for rand()
+                   SVC       #SVC_GET_RANDOM_INTEGER
+                   ADDR      R1, R10         ; Add 'A' unicode to random number
+;----------------------------------------------------------
+; n := RandomInt(0,6)+1
+;----------------------------------------------------------
+                   LDR       R10, #1         ; Lower bound for random number
+                   LDR       R2, #6          ; Load upper bound for rand()
+                   SVC       #SVC_GET_RANDOM_INTEGER
+                   ADDR      R2, R10         ; Add 1 to random number
+;----------------------------------------------------------
+; PRINT "c = ",c,ENDL
+;----------------------------------------------------------
+                   LDR       R15, #format2   ; Print format2
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; PRINT "n = ",n,ENDL
+;----------------------------------------------------------
+                   LDR       R15, #format3   ; Print format3
+                   SVC       #SVC_WRITE_TO_TERMINAL
+;----------------------------------------------------------
+; FOR i := 1 TO n
+;----------------------------------------------------------
+                   LDR      R3, #1         ; Initialize count i (R3) = 1
+FOR1               EQU      *               ; Loop start
+                   COPYR    R10, R3        ; temp value for R3
+                   CMPR     R10, R2         ; Compare i (R3) with n (R2)
+                   JMPP     R10,  endFOR1    ; If i > n, exit loop
+;---------------------------------------------------------------------------------------------------
+		;----------------------------------------------------------
+		; FOR j := 1 TO i
+		;----------------------------------------------------------
+                   LDR      R4, #1         ; Initialize count j (R4) = 1
+FOR2               EQU      *              ; Loop start
+                   COPYR    R11, R4        ; temp value for R4
+                   CMPR     R11, R3         ; Compare j (R4) with i (R3)
+                   JMPP     R11, endFOR2    ; If j > i, exit loop
+				;----------------------------------------------------------
+				; PRINT c
+				;----------------------------------------------------------
+                   LDR       R15, #format1  ; Print format1
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   INCR     R4              ; j = j + 1
+                   JMP      FOR2            ; Repeat if j <= i
+		;----------------------------------------------------------
+		; END
+		;----------------------------------------------------------
+endFOR2            EQU       *
+		;----------------------------------------------------------
+		; IF ( i = n ) THEN
+		;----------------------------------------------------------
+                   COPYR    R10, R3          ; temp value for R3
+                   CMPR      R10, R2         ; Compare i (R3) to n (R2)
+                   JMPNZ     R10, ELSE       ; If i != n, jump to ELSE
+				;----------------------------------------------------------
+				; PRINT ".",ENDL
+				;----------------------------------------------------------
+				   LDR       R15, #format4
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   JMP       endIF
+		;----------------------------------------------------------
+		; ELSE
+		;----------------------------------------------------------
+ELSE               EQU       *
+				;----------------------------------------------------------
+				; PRINT ","
+				;----------------------------------------------------------
+				   LDR       R15, #format5
+                   SVC       #SVC_WRITE_TO_TERMINAL
+                   JMP       endIF
+		;----------------------------------------------------------
+		; END
+		;----------------------------------------------------------
+endIF              EQU       *
+;----------------------------------------------------------
+; END
+;----------------------------------------------------------
+                   INCR     R3              ; i = i + 1
+                   JMP      FOR1            ; Repeat the FOR1 loop
+endFOR1            EQU       *
+;----------------------------------------------------------
+; STOP
+;----------------------------------------------------------
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU       100  ; Terminating the process
+SVC_READ_FROM_TERMINAL                 EQU       300  ; Reading input from the terminal
+SVC_WRITE_TO_TERMINAL                  EQU       301  ; Writing output to the terminal
+SVC_GET_RANDOM_INTEGER                 EQU       2    ; 
+
+; ***Static data
+;format10           DS       "Out of for loop 1"
+;format11           DS       "Out of for loop 2"
+;format12           DS       "in if"
+;format13           DS       "in else"
+;format14           DS       "i = %3i (1) n = %2i%n"
+;format15           DS       "j = %4i (1) i = %3i%n (1)"
+
+format1            DS       "%1c"
+format2            DS       "c = %1c%n"
+format3            DS       "n = %2i%n"
+format4            DS       "."
+format5            DS       ","
+   END

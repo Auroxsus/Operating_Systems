@@ -1,0 +1,7 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Demonstrate use of S16OS system service requests for terminal IO
+; Sample1.job
+;----------------------------------------------------------
+$JOB NAME="Sample1" FILE = "Sample1" PRIORITY = 4 ARRIVAL = 300
+$END

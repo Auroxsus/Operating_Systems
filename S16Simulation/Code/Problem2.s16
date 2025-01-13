@@ -1,0 +1,154 @@
+;----------------------------------------------------------
+; Dr. Art Hanna
+; Final Exam, Problem #2
+; Problem2.s16
+;----------------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in the
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: n
+;    1: i
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #+4                           ; allocate local variables
+                   SETFB     #-4
+
+; INPUT "n [0,24]? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0                      ; n
+; FOR i := 0 TO n BY 1
+                   ZEROR R1
+                   STR R1,FB:1 ; i
+FOR                EQU       *
+                   LDR R1, FB:1   ;i
+                   LDR R2, FB:0     ; n
+                   CMPR R1, R2
+                   JMPP R1, endFOR ;JMPN R1, endFOR
+                   
+                   PUSHR      R1  ; i
+                   PUSHFB
+                   CALL      F      
+                   POPFB
+                   POPR       R1
+                   
+;    PRINT "F(",i,") = ",F(i),ENDL
+                   LDR      R3, FB:1
+                   LDAR     R15,format2
+                   SVC      #SVC_WRITE_TO_TERMINAL
+                   
+                   LDR R1, FB:1   
+                   INCR R1       
+                   STR R1, FB:1   ;i = i +1
+                   JMP      FOR
+; END
+endFOR             EQU       *
+; STOP
+                   ADJSP     #-4                           ; deallocate local variables
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;-----------------------------------------------------------
+; FUNCTION F: INT(IN i: INT)
+;-----------------------------------------------------------
+; activation record /// FB:?
+;    0: function return value, F(i)
+;    1: i (pass-by-value formal parameter)
+;    2: caller FB
+;    3: caller return address
+;    4: save R1
+;    5: save R2
+;    6: r  (local variable)
+;    7: f2 (local variable)
+;    8: f1 (local variable)
+;-----------------------------------------------------------
+F                  EQU       *
+                   PUSHR     R1                            ; save registers on entry
+                   PUSHR     R2
+; build activation record on run-time stack
+                   ADJSP     #6                            ; allocate local variables
+                   SETFB     #-18
+
+; IF ( i = 0 ) THEN
+                   LDR R1, FB:1     ; i
+                   LDR R2, #0 
+                   CMPR R1, R2
+                   JMPNZ R1, ELSEIF 
+;    r := 0
+                   LDR       R1, #0     
+                   STR       R1, FB:6    ; r = 0
+                   JMP       ENDIF
+
+ELSEIF                  EQU       *
+; ELSEIF ( i = 1 ) THEN
+;    r := 1
+                   LDR       R1, FB:1     
+                   LDR       R2, #1  
+                   CMPR R1, R2
+                   JMPP R1, ELSE
+                   
+                   STR  R1, FB:6     ; r = 1 
+                   JMP ENDIF
+; ELSE
+ELSE                  EQU       *
+;    f2 := F(i-2)
+                   LDR       R1, FB:1  ; Load i
+                   DECR R1
+                   DECR R1 ; i -2
+                   PUSHR R1
+                   pushfb
+                   CALL F
+                   popfb
+                   POPR R2
+                   str R2, FB:7
+
+;    f1 := F(i-1)
+                   LDR R1, FB:1 ; i
+                   DECR R1 ; i -1
+                   PUSHR R1
+                   pushfb
+                   CALL F
+                   popfb
+                   POPR r2
+                   str R2, FB:8
+                   
+;     r := f2+f1
+                   LDR       R1, FB:7          
+                   LDR       R2, FB:8        
+                   
+                   ADDR R1, R2
+                   str R1, FB:6
+
+ENDIF                  EQU       *
+; RETURN ( r )
+                   LDR       R1,FB:6
+                   STR       R1,FB:0
+                   ADJSP     #-6                           ; deallocate local variables
+                   
+                   POPR      R2                            ; restore registers on exit
+                   POPR      R1
+                   RET
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS        "n [0,24]? %1i"
+format2            DS        "F(%3i) = %2u%n"
+
+   END

@@ -1,0 +1,173 @@
+Configuration file ".\S16.config" not found
+Configuration file "testFin.config" not found
+---------------------------------------------------------
+S16/S16OS version FA2022
+
+Tracing is enabled
+   Trace instruction execution
+   Trace memory allocations
+   Trace SJF scheduler t and tau changes
+   Trace process scheduling decisions
+   Trace process dispatching decisions
+   Trace O/S queue operations
+   Trace individual process statistics and system statistics
+   Trace occurrence of hardware interrupts
+   Trace miscellaneous service requests (ones not already traced)
+   Trace process management activities
+   Trace resource management activities
+   Trace terminal IO
+   Trace disk IO
+   Trace memory-segment activities
+   Trace message box service requests
+   Trace semaphore service requests
+   Trace mutex service requests
+   Trace event service requests
+   Trace pipe service requests
+   Trace deadlock detection
+   Trace signals
+
+Maximum number of resources is  512
+
+Using First Come/First Serve (FCFS) short-term CPU scheduler
+
+Using non-preemptive short-term CPU scheduler
+
+Using FCFS message queue scheduler
+
+Using FCFS disk IO queue scheduler
+
+Guarding against run-away execution
+   S16clock quantum is 10000
+
+Minimum SVC wait time is    20
+Maximum SVC wait time is   200
+
+Context switch time is    10
+
+Using several-instance resource deadlock detection algorithm (method #2)
+
+Default terminal prompt is "? "
+TRUE string is "true"
+FALSE string is "false"
+
+Default SSSize in pages is 8
+---------------------------------------------------------
+
+@         0      construct empty queue "readyQ"
+@         0      construct empty queue "jobQ"
+@         0      construct empty queue "waitQ"
+@         0      construct empty queue "joinQ"
+@         0      construct empty queue "signalsQ"
+@         0      construct empty queue "suspendedQ"
+@         0      construct empty queue "sleepQ"
+@         0      construct empty queue "resourcesWaitQ"
+@         0      construct empty queue "diskIOQ"
+@         0      allocate JOBS resource "testFin" (handle 1)
+@         0(  1) added to "jobQ" = { 1(0) }
+@         0(  1) removed from "jobQ" = { empty }
+@         0      construct empty queue "testFin (childThreadQ)"
+@         0(  1) allocated physical page 0 (code-segment for new job)
+@         0(  1) allocated physical page 1 (data-segment for new job)
+@         0(  1) allocated physical page 2 (stack-segment for new job)
+@         0(  1) allocated physical page 3 (stack-segment for new job)
+@         0(  1) allocated physical page 4 (stack-segment for new job)
+@         0(  1) allocated physical page 5 (stack-segment for new job)
+@         0(  1) allocated physical page 6 (stack-segment for new job)
+@         0(  1) allocated physical page 7 (stack-segment for new job)
+@         0(  1) allocated physical page 8 (stack-segment for new job)
+@         0(  1) allocated physical page 9 (stack-segment for new job)
+@         0(  1) create heavyweight process "testFin"
+@         0(  1) added to "readyQ" = { 1(0,5,100) }
+@         0(  1) removed from "readyQ" = { empty }
+@         5(  1) scheduled "readyQ" = { empty }
+@         5(  1) dispatched
+                 main:
+@         6(  1) 0000: ADJSP   #0004              SP = F004                                                             
+@         7(  1) 0003: SETFB   #FFFC              FB = F000 SP(F004)                                                    
+@         8(  1) 0006: LDAR    R15,0200           R15 = 0200                  format1                                   
+@         9(  1) t =     4, tau =    52
+(  1)< n [0,24]? 23
+@        14(  1) added to "waitQ" = { 1(203) }
+@         9(  1) 000B: SVC     #012C              R0 = 0000 R15(0200)         SVC_READ_FROM_TERMINAL                    
+@       203(  1) removed from "waitQ" = { empty }
+@       203(  1) added to "readyQ" = { 1(203,5,52) }
+@       203(  1) removed from "readyQ" = { empty }
+@       208(  1) scheduled "readyQ" = { empty }
+@       208(  1) dispatched
+@       209(  1) 000E: STR     R1,FB:0            R1(0017 @F000)                                                        
+@       210(  1) 0013: ZEROR   R3                 R3 = 0000                                                             
+@       211(  1) 0015: STR     R3,FB:1            R3(0000 @F002)                                                        
+                 FOR_LOOP:
+@       212(  1) 001A: LDR     R3,FB:1            R3 = 0000 @F002                                                       
+@       213(  1) 001F: LDR     R2,FB:0            R2 = 0017 @F000                                                       
+@       214(  1) 0024: CMPR    R3,R2              R3 = FFFF R2(0017)                                                    
+@       215(  1) 0027: JMPN    R3,005A            R3(FFFF)                    END_FOR                                   
+                 END_FOR:
+@       216(  1) 005A: ADJSP   #FFFC              SP = F000                                                             
+@       217(  1) t =     9, tau =    30
+@       222(  1) terminated
+Turn Around Time             222 ticks
+Run   State Time              13 ticks         2 count
+Ready State Time               0 ticks         2 count
+Wait  State Time             189 ticks         1 count
+Join  State Time               0 ticks         0 count
+Suspended State Time           0 ticks         0 count
+Sleep State Time               0 ticks         0 count
+Semaphore Wait Time            0 ticks         0 count
+Mutex     Wait Time            0 ticks         0 count
+Message Wait Time              0 ticks         0 count
+Event Wait Time                0 ticks         0 count
+Disk IO Wait Time              0 ticks         0 count
+Resources Wait Time            0 ticks         0 count
+Context Switch Time           20 ticks         2 count
+H/W Interrupts                 0
+CPU Bursts                     2
+Tau                           30 ticks
+IO Bursts                      2
+Signals                        0 sent,         0 ignored,         0 handled
+Resources                      0 allocated,    0 deallocated
+
+@       222(  1) deallocated physical page 0 (code-segment during terminate job)
+@       222(  1) deallocated physical page 1 (data-segment during terminate job)
+@       222(  1) deallocated physical page 2 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 3 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 4 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 5 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 6 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 7 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 8 (stack-segment during terminate job)
+@       222(  1) deallocated physical page 9 (stack-segment during terminate job)
+@       222      destruct empty queue "testFin (childThreadQ)"
+@       222      deallocate JOBS resource "testFin" (handle 1)
+Jobs still alive               0
+
+Number of jobs           1
+Throughput         0.00450 jobs/clock-tick
+CPU Utilization      5.41%
+IDLE-ing            85.59%
+Context switching    9.01%
+
+***Trace the state of system queues
+@       222   "jobQ" is empty
+@       222   "readyQ" is empty
+@       222   "waitQ" is empty
+@       222   "joinQ" is empty
+@       222   "signalsQ" is empty
+@       222   "sleepQ" is empty
+@       222   "suspendedQ" is empty
+@       222   "resourcesWaitQ" is empty
+@       222   "diskIOQ" is empty
+***End trace the state of system queues
+
+@       222      destruct empty queue "jobQ"
+@       222      destruct empty queue "readyQ"
+@       222      destruct empty queue "waitQ"
+@       222      destruct empty queue "joinQ"
+@       222      destruct empty queue "signalsQ"
+@       222      destruct empty queue "sleepQ"
+@       222      destruct empty queue "suspendedQ"
+@       222      destruct empty queue "resourcesWaitQ"
+@       222      destruct empty queue "diskIOQ"
+@       217(  1) 005D: SVC     #0064              R0 = 0000 R15(0200)         SVC_TERMINATE_PROCESS                     
+
+CPU halted

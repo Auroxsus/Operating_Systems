@@ -1,0 +1,124 @@
+;--------------------------------------------------
+; Dr. Art Hanna
+; Midterm Examination, Problem #1
+; Problem1.s16
+;--------------------------------------------------
+   CODESEGMENT
+;----------------------------------------------------------
+; PROGRAM main()
+;    *Note* main() uses an activation record to store *ALL*
+;       variable local data. Constants are stored in the
+;       data-segment as static data.
+;----------------------------------------------------------
+; activation record on run-time stack
+;    0: n
+;    1: i
+; 2-26: F[0:24]
+;----------------------------------------------------------
+main               EQU       *
+
+; build activation record on run-time stack
+                   ADJSP     #54                          ; allocate local variables
+                   SETFB     #-54
+
+; INPUT "n [0,24]? " n
+                   LDAR      R15,format1
+                   SVC       #SVC_READ_FROM_TERMINAL
+                   STR       R1,FB:0                      ; 0 in F[0]
+; F[0] := 0
+                   ZEROR     R1                           ; R1 = 0
+                   STR       R1, FB:2                     ; 0 in F[0]
+; F[1] := 1
+                   LDR       R1, #1                       ; R1 = 1
+                   STR       R1, FB:3                     ; 0 in F[1]
+                   
+                   LDR       R1, #2
+                   STR       R1, FB:1
+; FOR i := 2 TO n BY 1
+FOR                EQU       *
+
+                   LDR       R1, FB:1                  ; i 
+                   LDR       R2, FB:0                   ; n
+                   CMPR      R1, R2
+                   JMPP      R1, endFOR
+;    F[i] := F[i-2]+F[i-1]
+                   LDAR      R2, FB:2 
+                   LDR       R3, FB:1
+                   DECR      R3                           ; i-1
+                   DECR      R3                           ; i-2
+
+                   ADDR      R3, R3                       ; Address of F[i-2]
+                   ADDR      R2, R3                       ; Address of F[i-1]
+
+                   LDR       R4, @R2
+                   LDAR      R2, FB:2
+                   LDR       R3, FB:1
+                   DECR      R3
+                   ADDR      R3, R3
+                   ADDR      R2, R3
+
+                   LDR       R5, @R2
+
+                   ADDR      R4, R5
+                   LDAR      R2, FB:2
+                   LDR       R3, FB:1
+                   ADDR      R3, R3
+                   ADDR      R2, R3
+
+                   STR       R4, @R2
+
+                   LDR       R1, FB:1
+                   INCR      R1
+                   STR       R1, FB:1
+                   JMP       FOR
+; END
+endFOR             EQU       *
+
+                   ZEROR     R1
+                   STR       R1, FB:1
+; FOR i := 0 TO n BY 1
+FOR2               EQU      *
+                   LDR      R1, FB:1
+                   LDR      R2, FB:0
+
+                   CMPR     R1, R2
+                   JMPP     R1, endFOR2
+;    PRINT "F(",i,") = ",F[i],ENDL
+                   LDR      R3, FB:1
+                   LDAR     R15,format2
+                   LDAR     R2, FB:2
+                   LDR      R4, FB:1
+                   ADDR     R4, R4
+                   ADDR     R2, R4
+                   LDR      R2, @R2
+
+                   SVC      #SVC_WRITE_TO_TERMINAL
+                   
+                   LDR      R1, FB:1
+                   INCR     R1
+                   STR      R1, FB:1
+                   JMP      FOR2
+; END
+endFOR2            EQU      *
+; STOP
+; destroy activation record on run-time stack
+                   ADJSP     #-54                          ; deallocate local variables
+                   SVC       #SVC_TERMINATE_PROCESS
+
+;----------------------------------------------------------
+   DATASEGMENT
+;----------------------------------------------------------
+; ***Service request number definitions
+SVC_TERMINATE_PROCESS                  EQU    100
+SVC_READ_FROM_TERMINAL                 EQU    300
+SVC_WRITE_TO_TERMINAL                  EQU    301
+
+; ***Service request return code definitions
+SVC_EOF                                EQU     -1          ; Terminal input EOF
+SVC_OK                                 EQU      0          ; No error occurred
+
+; *** Static data
+format1            DS        "n [0,24]? %1i"
+format2            DS        "F(%3i) = %2u%n"
+
+   END
